@@ -13,33 +13,26 @@ def read_files(files):
 long_description = read_files(['README.md', 'CHANGELOG.md'])
 
 meta = {}
-with io.open('./viz-toolkit/version.py', encoding='utf-8') as f:
+with io.open('./tetrad-viz-toolkit/version.py', encoding='utf-8') as f:
     exec(f.read(), meta)
 
 setup(
-    name="viz-toolkit",
+    name="tetrad-viz-toolkit",
     description="Toolkit for visualizations using Tetrad infrastructure.",
     long_description=long_description,
     long_description_content_type='text/markdown',
     version=meta['__version__'],
-    author="Saurabh Kumar",
-    author_email="me+github@saurabh-kumar.com",
-    url="https://github.com/theskumar/python-dotenv",
+    author="Tom Becnel",
+    author_email="thomas.becnel@tetradsensors.com",
+    url="https://github.com/tetradsensors/tetrad-viz-toolkit",
     keywords=['environment variables', 'deployments', 'settings', 'env', 'dotenv',
               'configurations', 'python'],
-    packages=['dotenv'],
-    package_dir={'': 'src'},
+    packages=['tetrad-viz-toolkit'],
+    package_dir={'': 'tetrad-viz-toolkit'},
     package_data={
-        'dotenv': ['py.typed'],
+        'tetrad-viz-toolkit': ['py.typed'],
     },
     python_requires=">=3.5",
-    extras_require={
-        'cli': ['click>=5.0', ],
-    },
-    entry_points='''
-        [console_scripts]
-        dotenv=dotenv.cli:cli
-    ''',
     license='BSD-3-Clause',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
