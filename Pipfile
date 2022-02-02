@@ -8,6 +8,12 @@ google-cloud-storage = "*"
 matplotlib = "*"
 folium = "*"
 python-dotenv = "*"
+pandas = "*"
+python-dateutil = "*"
+datetime = "*"
+tetrad-visualization-toolkit = {editable = true, path = "."}
+pillow = "*"
+colours = "*"
 
 [dev-packages]
 
