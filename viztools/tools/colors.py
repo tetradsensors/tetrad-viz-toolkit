@@ -2,11 +2,11 @@
 
 PM_EPA_COLOR_SCALE_RGB = {
     0:   (105, 159, 64),    # Green
-    12:  (255, 190, 63),    # Yellow
-    35:  (250, 121, 29),    # Orange
-    70:  (201, 52, 45),     # Red-Orange
-    150: (176, 10, 87),     # Red-Purple
-    250: (128, 8, 78)       # Purple
+    15:  (255, 190, 63),    # Yellow
+    30:  (250, 121, 29),    # Orange
+    45:  (201, 52, 45),     # Red-Orange
+    60: (176, 10, 87),     # Red-Purple
+    75: (128, 8, 78)       # Purple
 }
 
 AQI_COLOR_SCALE_RGB = {
