@@ -3,10 +3,8 @@ from PIL import Image
 from colors import *
 from colors import _hex_to_RGB
 from generate_image import _resize_mat, _estimate_map_to_img, _estimate_map_to_img_dist_scaled
-from matplotlib import pyplot as plt
-import sys
 import datetime
-from viztools.io.storage import read_region_snapshot
+from vizio.storage import read_region_snapshot
 
 def test_color_gradients():
     def show_gradient(cd, format):
@@ -64,6 +62,11 @@ def test_estimate_map_to_img_dist_scaled():
 
 
 def video():
+    """
+    Also PS works to make gifs but it takes forever
+    https://blog.hubspot.com/marketing/how-to-create-animated-gif-quick-tip-ht
+
+    """
     import cv2
     import os
 
@@ -84,13 +87,16 @@ def video():
     video.release()
         
 
+def test_show_map():
+    
+
 
 def run_tests():
     # test_color_gradients()
     # test_resize_img()
     # test_estimate_map_to_img()
     # test_estimate_map_to_img_dist_scaled()
-    video()
+    # video()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 import numpy as np
-from colors import get_gyor_color_gradient
+from .colors import get_gyor_color_gradient
 from PIL import Image
 from scipy import interpolate
 from scipy.ndimage import zoom
@@ -36,7 +36,7 @@ def _var_to_alpha(var, opac95=3, opac05=12):
     return (256 * out).clip(0, 255).astype(np.uint8)
 
 
-def _estimate_map_to_img(obj, filename, size=None, format='png', scaling='epa', opac95=3, opac05=12):
+def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac05=12):
     """
     obj: the estimate map dictionary (keys: lat, lon, alt, pm, var)
     filename: output filename
@@ -50,10 +50,8 @@ def _estimate_map_to_img(obj, filename, size=None, format='png', scaling='epa', 
     opac05: 05% opacity value for alpha
     """
 
-    pm  = np.array(obj['pm'])
-    var = np.array(obj['var'])
-
-    print(f'\tpm (avg, max): ({pm.mean(), pm.max()})')
+    pm  = np.array(obj.vals)
+    var = np.array(obj.vars)
 
     rgba = np.zeros((*pm.shape, 4), dtype=np.uint8)
 
@@ -76,14 +74,13 @@ def _estimate_map_to_img(obj, filename, size=None, format='png', scaling='epa', 
         rgba = resized.clip(0, 255).astype(np.uint8)
     
     # flip over x-axis for latitude getting bigger as we go up
-    rgba = rgba[::-1, :, :]
+    # rgba = rgba[::-1, :, :]
 
     img = Image.fromarray(rgba, "RGBA")
-    img.save(filename, format=format)
+    return img
 
 
-def _estimate_map_to_img_dist_scaled(obj,
-                                     filename, 
+def _snapshot_to_img_dist_scaled(obj,
                                      largest_size=None, 
                                      format='png', 
                                      scaling='epa', 
@@ -94,10 +91,10 @@ def _estimate_map_to_img_dist_scaled(obj,
     largest_size: the output won't be larger than this many pixels on either height or width. If None then we will scale UP instead
     """
 
-    lat_min = obj['lat'][0]
-    lat_max = obj['lat'][-1]
-    lon_min = obj['lon'][0]
-    lon_max = obj['lon'][-1]
+    lat_min = obj.lats.min()
+    lat_max = obj.lats.max()
+    lon_min = obj.lons.min()
+    lon_max = obj.lons.max()
 
     lat_dist_m = geopy.distance.distance((lat_min, lon_max), (lat_max, lon_max)).km
     lon_dist_m = geopy.distance.distance((lat_max, lon_min), (lat_max, lon_max)).km
@@ -113,15 +110,14 @@ def _estimate_map_to_img_dist_scaled(obj,
     
     # Otherwise let's scale up instead of down
     else:
-        lat_sz, lon_sz = len(obj['lat']), len(obj['lon'])
+        lat_sz, lon_sz = len(obj.lats), len(obj.lons)
 
         if lat_dist_m > lon_dist_m:
             size = (lat_sz, int(lon_sz * ratio))
         else:
             size = (int(lat_sz * ratio), lon_sz)
 
-    return _estimate_map_to_img(obj, 
-                                filename, 
+    return _snapshot_to_img(obj,
                                 size=size, 
                                 format=format, 
                                 scaling=scaling, 

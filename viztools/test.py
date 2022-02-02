@@ -6,16 +6,12 @@ def test_StaticViz():
         region='slc_ut',
         timestamp='2022-01-28T15:00:00Z'
     )
-    print(vars(viz).keys())
+    viz.save_map('/Users/tombo/Downloads/map.png')
 
 
 def run_tests():
     test_StaticViz()
 
 
-def main():
-    run_tests()
-
-
 if __name__ == '__main__':
-    main()
+    run_tests()

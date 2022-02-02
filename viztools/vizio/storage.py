@@ -2,9 +2,7 @@ from datetime import timedelta
 from dateutil.parser import parse
 from google.cloud import storage
 import json
-import numpy as np
-
-from matplotlib import pyplot as plt
+from viztools.tools.snapshot import Snapshot
 
 BUCKET = 'tetrad_estimate_maps'
 
@@ -54,11 +52,12 @@ def read_region_snapshot(region, timestamp, credentials_file=None, get_closest=F
     estimates = obj['estimates'][0]['PM2_5']
     variance = obj['estimates'][0]['Variance']
 
-    return {
-        'lat': obj['Latitudes'],
-        'lon': obj['Longitudes'],
-        'alt': obj['Elevations'],
-        'pm':  estimates,
-        'var': variance
-    }
+    return Snapshot(lats=obj['Latitudes'],
+                    lons=obj['Longitudes'],
+                    alts=obj['Elevations'],
+                    vals=estimates,
+                    vars=variance,
+                    generate_img=True,
+                    opac95=5,
+                    opac05=20)
     
