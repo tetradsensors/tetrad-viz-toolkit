@@ -1,0 +1,11 @@
+folium
+Pillow
+numpy
+python-dateutil
+opencv-python
+selenium
+scipy
+geopy
+matplotlib
+google-cloud-storage
+.

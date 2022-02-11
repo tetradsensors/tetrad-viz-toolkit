@@ -1,10 +1,10 @@
 # Taken from: https://gist.github.com/RoboDonut/83ec5909621a6037f275799032e97563
 
 PM_EPA_COLOR_SCALE_RGB = {
-    0:   (105, 159, 64),    # Green
-    15:  (255, 190, 63),    # Yellow
-    30:  (250, 121, 29),    # Orange
-    45:  (201, 52, 45),     # Red-Orange
+    0:  (105, 159, 64),    # Green
+    15: (255, 190, 63),    # Yellow
+    30: (250, 121, 29),    # Orange
+    45: (201, 52, 45),     # Red-Orange
     60: (176, 10, 87),     # Red-Purple
     75: (128, 8, 78)       # Purple
 }

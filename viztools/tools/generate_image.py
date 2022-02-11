@@ -4,6 +4,8 @@ from PIL import Image
 from scipy import interpolate
 from scipy.ndimage import zoom
 import geopy.distance
+import matplotlib as mpl
+from matplotlib import cm
 
 def _resize_mat(mat, size):
     """
@@ -36,7 +38,7 @@ def _var_to_alpha(var, opac95=3, opac05=12):
     return (256 * out).clip(0, 255).astype(np.uint8)
 
 
-def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac05=12):
+def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac05=12, colormap='auto'):
     """
     obj: the estimate map dictionary (keys: lat, lon, alt, pm, var)
     filename: output filename
@@ -55,13 +57,19 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
 
     rgba = np.zeros((*pm.shape, 4), dtype=np.uint8)
 
-    gradient = get_gyor_color_gradient('epa')
-
-    # Convert the z-values to RGB
-    g = np.array(gradient)
-    pmi = pm.astype(int)
-    for i in range(3):
-        rgba[:, :, i] = g[:, i][pmi]
+    if colormap == 'auto':
+        gradient = get_gyor_color_gradient('epa')
+        
+        # Convert the z-values to RGB
+        g = np.array(gradient)
+        pmi = pm.astype(int)
+        for i in range(3):
+            rgba[:, :, i] = g[:, i][pmi]
+    else:
+        # print(f'[_snapshot_to_img]: using {colormap}')
+        cmap = cm.get_cmap(colormap)
+        norm = mpl.colors.Normalize(vmin=0, vmax=40)
+        rgba = cmap(norm(pm)) * 256
 
     # Alpha scaling
     rgba[:, :, -1] = _var_to_alpha(var, opac95, opac05)
@@ -81,11 +89,12 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
 
 
 def _snapshot_to_img_dist_scaled(obj,
-                                     largest_size=None, 
-                                     format='png', 
-                                     scaling='epa', 
-                                     opac95=3, 
-                                     opac05=12):
+                                 largest_size=None, 
+                                 format='png', 
+                                 scaling='epa', 
+                                 opac95=3, 
+                                 opac05=12,
+                                 colormap='auto'):
     """
     Takes into consideration the ratio between lat/lon distance and scales the output image accordingly.
     largest_size: the output won't be larger than this many pixels on either height or width. If None then we will scale UP instead
@@ -118,11 +127,12 @@ def _snapshot_to_img_dist_scaled(obj,
             size = (int(lat_sz * ratio), lon_sz)
 
     return _snapshot_to_img(obj,
-                                size=size, 
-                                format=format, 
-                                scaling=scaling, 
-                                opac95=opac95, 
-                                opac05=opac05)
+                            size=size, 
+                            format=format, 
+                            scaling=scaling, 
+                            opac95=opac95, 
+                            opac05=opac05,
+                            colormap=colormap)
 
 
 

@@ -1,5 +1,5 @@
 import io
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def read_files(files):
@@ -25,7 +25,7 @@ setup(
     author="Tom Becnel",
     author_email="thomas.becnel@tetradsensors.com",
     url="https://github.com/tetradsensors/tetrad-viz-toolkit",
-    packages=['viztools', 'viztools.io'],
+    packages=find_packages(exclude=["*test*"]),
     python_requires=">=3.5",
     license='MIT',
 )

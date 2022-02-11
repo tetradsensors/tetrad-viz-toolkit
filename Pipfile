@@ -17,6 +17,8 @@ colours = "*"
 scipy = "*"
 geopy = "*"
 opencv-python = "*"
+selenium = "*"
+jupyterlab = "*"
 
 [dev-packages]
 
