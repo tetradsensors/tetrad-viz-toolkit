@@ -9,7 +9,7 @@ Generated maps look like this:
 ![Static Snapshot Estimate Map](examples/files/map.png)
 
 ### Getting Started
-The fastest way to get up and running is by installing [pipenv](https://pipenv.pypa.io/en/latest/)
+The fastest way to get up and running is by installing [pipenv](https://pipenv.pypa.io/en/latest/). After pipenv is installed, you can set up a new virtual environment:
 
 ```bash
 pipenv install --skip-lock -r requirements.txt
