@@ -10,15 +10,17 @@ folium = "*"
 python-dotenv = "*"
 pandas = "*"
 python-dateutil = "*"
-datetime = "*"
-tetrad-visualization-toolkit = {editable = true, path = "."}
-pillow = "*"
+tetrad-visualization-toolkit = {file = "file:///Users/tombo/Tetrad/tetrad-viz-toolkit"}
 colours = "*"
 scipy = "*"
 geopy = "*"
 opencv-python = "*"
 selenium = "*"
 jupyterlab = "*"
+numpy = "*"
+notebook = "*"
+DateTime = "*"
+Pillow = "*"
 
 [dev-packages]
 
