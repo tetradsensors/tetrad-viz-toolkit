@@ -147,6 +147,7 @@ cython_debug/
 # Other
 .DS_Store
 Pipfile.lock
+Pipfile
 .vscode
 .env 
 geckodriver.log

@@ -8,4 +8,5 @@ scipy
 geopy
 matplotlib
 google-cloud-storage
+notebook
 .
