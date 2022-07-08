@@ -51,6 +51,9 @@ class Animation:
             self.end = end 
         else:
             self.end = parse(end)
+
+        assert self.start < self.end, f"Bad start/end times. You entered: [{self.start} - {self.end}]"
+
         self.zoom = zoom
         self.location = location 
         self.opac05 = opac05
@@ -63,7 +66,7 @@ class Animation:
 
         assert os.path.exists(dirname), f"{dirname} does not exist. You must create it manually"
 
-        # Selenium web driver fro taking screenshots
+        # Selenium web driver for taking screenshots
         options = webdriver.firefox.options.Options()
         options.add_argument('--headless')
         driver = webdriver.Firefox(options=options)
