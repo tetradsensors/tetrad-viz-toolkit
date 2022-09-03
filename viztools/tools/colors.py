@@ -104,6 +104,12 @@ def _format_color_dict(cd, format):
 def get_custom_color_gradient(anchors, n=None, format='RGB'):
     """
     anchors: a dict where keys are anchor locations and values are RGB (tuple) or HEX (string)
+    {
+        0: #efefef,
+        25: #deadbe,
+        77: #71e124,
+        100: #ffffff
+    }
     n: the number of points. if not specified will choose last anchor loc
     format: output format (R,G,B) or #HEX
     """

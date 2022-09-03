@@ -1,11 +1,11 @@
 import numpy as np
-from .colors import get_gyor_color_gradient
+from viztools.tools.colors import get_gyor_color_gradient
 from PIL import Image
-from scipy import interpolate
 from scipy.ndimage import zoom
 import geopy.distance
 import matplotlib as mpl
 from matplotlib import cm
+
 
 def _resize_mat(mat, size):
     """
@@ -19,7 +19,7 @@ def _resize_mat(mat, size):
     rows_zm = size[0] / rows
     cols_zm = size[1] / cols
 
-    return zoom(mat, [rows_zm, cols_zm]) 
+    return zoom(mat, [rows_zm, cols_zm])
 
 
 def _var_to_alpha(var, opac95=3, opac05=12):
@@ -52,14 +52,14 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
     opac05: 05% opacity value for alpha
     """
 
-    pm  = np.array(obj.vals)
+    pm = np.array(obj.vals)
     var = np.array(obj.vars)
 
     rgba = np.zeros((*pm.shape, 4), dtype=np.uint8)
 
     if colormap == 'auto':
         gradient = get_gyor_color_gradient('epa')
-        
+
         # Convert the z-values to RGB
         g = np.array(gradient)
         pmi = pm.astype(int)
@@ -80,7 +80,7 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
         for i in range(4):
             resized[:, :, i] = _resize_mat(rgba[:, :, i], sz)
         rgba = resized.clip(0, 255).astype(np.uint8)
-    
+
     # flip over x-axis for latitude getting bigger as we go up
     # rgba = rgba[::-1, :, :]
 
@@ -89,10 +89,10 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
 
 
 def _snapshot_to_img_dist_scaled(obj,
-                                 largest_size=None, 
-                                 format='png', 
-                                 scaling='epa', 
-                                 opac95=3, 
+                                 largest_size=None,
+                                 format='png',
+                                 scaling='epa',
+                                 opac95=3,
                                  opac05=12,
                                  colormap='auto'):
     """
@@ -105,8 +105,10 @@ def _snapshot_to_img_dist_scaled(obj,
     lon_min = obj.lons.min()
     lon_max = obj.lons.max()
 
-    lat_dist_m = geopy.distance.distance((lat_min, lon_max), (lat_max, lon_max)).km
-    lon_dist_m = geopy.distance.distance((lat_max, lon_min), (lat_max, lon_max)).km
+    lat_dist_m = geopy.distance.distance(
+        (lat_min, lon_max), (lat_max, lon_max)).km
+    lon_dist_m = geopy.distance.distance(
+        (lat_max, lon_min), (lat_max, lon_max)).km
 
     ratio = lat_dist_m / lon_dist_m
 
@@ -116,7 +118,7 @@ def _snapshot_to_img_dist_scaled(obj,
             size = (int(largest_size / ratio), largest_size)
         else:
             size = (largest_size, int(largest_size / ratio))
-    
+
     # Otherwise let's scale up instead of down
     else:
         lat_sz, lon_sz = len(obj.lats), len(obj.lons)
@@ -127,19 +129,9 @@ def _snapshot_to_img_dist_scaled(obj,
             size = (int(lat_sz * ratio), lon_sz)
 
     return _snapshot_to_img(obj,
-                            size=size, 
-                            format=format, 
-                            scaling=scaling, 
-                            opac95=opac95, 
+                            size=size,
+                            format=format,
+                            scaling=scaling,
+                            opac95=opac95,
                             opac05=opac05,
                             colormap=colormap)
-
-
-
-
-
-
-
-
-
-
