@@ -60,6 +60,7 @@ class Animation:
         self.textloc = textloc
 
     def create_animation(self, dirname, video_name='animation', fps=20, save_overlays=False):
+        print('Saving overlays')
         delay = 1
 
         assert os.path.exists(
@@ -105,12 +106,14 @@ class Animation:
                     textloc=self.textloc
                 )
             except Exception as e:
+                print('EXCEPTION')
                 print(str(e))
                 continue
 
             if save_overlays:
                 overlay_fn = f'{dirname}/{dts}_overlay.png'
                 viz.overlay_data.img.save(overlay_fn)
+                print(f'saved overlay to {overlay_fn}')
 
             html = viz.get_root().render()
             with temp_html_filepath(html) as fname:
@@ -124,6 +127,7 @@ class Animation:
 
             fn = f'{dirname}/{dts}.png'
             img.save(fn)
+            print(f'Saved image to: {fn}')
 
             img = cv2.imread(fn)
             height, width, _ = img.shape
