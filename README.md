@@ -34,3 +34,5 @@ Update version in `version.py`. Then run:
 ```bash
 python setup.py bdist_egg
 ```
+
+NOTE: Make sure you update the package in your local environment with pip!
