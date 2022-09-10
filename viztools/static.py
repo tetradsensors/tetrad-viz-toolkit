@@ -29,6 +29,9 @@ class StaticViz(FoliumMap):
                  location=None,
                  timestamp=False,
                  textloc=None,
+                 textsize=12,
+                 include_colorbar=True,
+                 image_overlay=None,  # {filename:, north:,...,name:}
                  *args,
                  **kwargs):
 
@@ -37,6 +40,7 @@ class StaticViz(FoliumMap):
 
         self._data = overlay_data    # Snapshot object
         self.textloc = textloc
+        self.textsize = textsize
 
         # TODO: Make better
         if zoom == 'auto':
@@ -69,37 +73,58 @@ class StaticViz(FoliumMap):
         folium.raster_layers.ImageOverlay(np.asarray(self._data.img),
                                           [
             (self._data.lats.min(), self._data.lons.min()),
-            (self._data.lats.max(),
-             self._data.lons.max())
+            (self._data.lats.max(), self._data.lons.max())
         ],
             opacity=0.75,
             origin='lower',
             pixelated=False,
             name=self._data.param).add_to(self)
+
+        if image_overlay:
+            print('adding image overlay')
+            img = np.array(Image.open(image_overlay['filename']))
+
+            folium.raster_layers.ImageOverlay(
+                img,
+                [
+                    (image_overlay['north'], image_overlay['east']),
+                    (image_overlay['south'], image_overlay['west'])
+                ],
+                opacity=1,
+                origin='upper',
+                pixelated=False,
+                name=image_overlay['name']
+            ).add_to(self)
+            print(
+                f'Added image with bounds: {image_overlay["north"]}, {image_overlay["south"]}, {image_overlay["east"]}, {image_overlay["west"]}')
+
         folium.LayerControl().add_to(self)
 
         if timestamp and self._data.timestamp:
             text = self._data.timestamp.strftime("%B %d, %Y")
+            icon_width = len(list(text)) * self.textsize
+            icon_height = self.textsize
             folium.map.Marker(
                 [self.textloc[0], self.textloc[1]],
                 icon=folium.features.DivIcon(
-                    icon_size=(250, 36),
-                    icon_anchor=(125, 18),
-                    html=f'<div style="font-size: 16pt;background:white;text-align:center;justify-content:center;padding: 5px 5px">{text}</div>',
+                    icon_size=(icon_width, icon_height),
+                    icon_anchor=(int(icon_width/2), int(icon_height/2)),
+                    html=f'<div style="border-radius:10px;font-size:{self.textsize}pt;background:rgba(255,255,255,0.6);text-align:center;justify-content:center;padding: 5px 5px">{text}</div>',
                 )
             ).add_to(self)
 
-        i, c = zip(*colors.PM_EPA_COLOR_SCALE_RGB.items())
-        if colormap == 'auto':
-            cmap = branca.colormap.LinearColormap(colors=c,
-                                                  index=i,
-                                                  vmin=0,
-                                                  vmax=40)
-        else:
-            cmap = eval(f"branca.colormap.linear.{colormap}.scale(0, 40)")
+        if include_colorbar:
+            i, c = zip(*colors.PM_EPA_COLOR_SCALE_RGB.items())
+            if colormap == 'auto':
+                cmap = branca.colormap.LinearColormap(colors=c,
+                                                      index=i,
+                                                      vmin=0,
+                                                      vmax=40)
+            else:
+                cmap = eval(f"branca.colormap.linear.{colormap}.scale(0, 40)")
 
-        cmap.caption = 'PM2.5 in micrograms/cu-meter'
-        cmap.add_to(self)
+            cmap.caption = 'PM2.5 in micrograms/cu-meter'
+            cmap.add_to(self)
 
     def save_img(self, filename):
         self._data.img.save(filename)
@@ -137,7 +162,10 @@ class StaticViz(FoliumMap):
                 zoom='auto',
                 location=None,
                 include_timestamp=False,
+                include_colorbar=True,
+                image_overlay=None,
                 textloc=None,
+                textsize=12,
                 opac95=5,
                 opac05=20,
                 tiles='Stamen Toner'):
@@ -157,5 +185,8 @@ class StaticViz(FoliumMap):
                          location=location,
                          timestamp=include_timestamp,
                          textloc=textloc,
-                         tiles=tiles
+                         textsize=textsize,
+                         tiles=tiles,
+                         include_colorbar=include_colorbar,
+                         image_overlay=image_overlay,
                          )

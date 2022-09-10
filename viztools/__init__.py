@@ -4,5 +4,5 @@ from the Tetrad database.
 """
 from viztools.tools import *
 from viztools.vizio import *
-from viztools.static import StaticViz
+from viztools.screenshot import Screenshot
 from viztools.animation import Animation

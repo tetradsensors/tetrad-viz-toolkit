@@ -39,7 +39,10 @@ class Animation:
                  opac05=20,
                  colormap='auto',
                  include_timestamp=False,
+                 include_colorbar=False,
+                 image_overlay=None,
                  textloc=None,
+                 textsize=12,
                  tiles='Stamen Toner'):
         self.region = region
         if isinstance(start, datetime.datetime):
@@ -62,7 +65,10 @@ class Animation:
         self.colormap = colormap
         self.include_timestamp = include_timestamp
         self.textloc = textloc
+        self.textsize = textsize
         self.tiles = tiles
+        self.include_colorbar = include_colorbar
+        self.image_overlay = image_overlay
 
     def create_animation(self, dirname, video_name='animation', fps=20, save_overlays=False):
         delay = 1
@@ -107,7 +113,10 @@ class Animation:
                     opac05=self.opac05,
                     colormap=self.colormap,
                     include_timestamp=self.include_timestamp,
+                    include_colorbar=self.include_colorbar,
+                    image_overlay=self.image_overlay,
                     textloc=self.textloc,
+                    textsize=self.textsize,
                     tiles=self.tiles
                 )
             except Exception as e:
