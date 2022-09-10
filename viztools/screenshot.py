@@ -29,11 +29,10 @@ def temp_html_filepath(data):
             os.remove(filepath)
 
 
-class Animation:
+class Screenshot:
     def __init__(self,
                  region,
-                 start,
-                 end,
+                 timestamp,
                  zoom,
                  location=None,
                  opac05=20,
@@ -41,17 +40,13 @@ class Animation:
                  include_timestamp=False,
                  textloc=None,
                  tiles='Stamen Toner'):
-        self.region = region
-        if isinstance(start, datetime.datetime):
-            self.start = start
-        else:
-            self.start = parse(start)
-        if isinstance(end, datetime.datetime):
-            self.end = end
-        else:
-            self.end = parse(end)
 
-        assert self.start < self.end, f"Bad start/end times. You entered: [{self.start} - {self.end}]"
+        self.region = region
+
+        if isinstance(timestamp, datetime.datetime):
+            self.timestamp = timestamp
+        else:
+            self.timestamp = parse(timestamp)
 
         if include_timestamp:
             assert textloc, "If include_timestamp then textloc must be given as (x,y) coordinates"
@@ -64,98 +59,47 @@ class Animation:
         self.textloc = textloc
         self.tiles = tiles
 
-    def create_animation(self, dirname, video_name='animation', fps=20, save_overlays=False):
+    def create_screenshot(self, filename, save_overlay=False):
         delay = 1
-
-        assert os.path.exists(
-            dirname), f"{dirname} does not exist. You must create it manually"
 
         # Selenium web driver for taking screenshots
         options = webdriver.firefox.options.Options()
         options.add_argument('--headless')
         driver = webdriver.Firefox(options=options)
 
-        # OpenCV VideoWriter Init (need size before we can actually make it)
-        video_name = f'{dirname}/{video_name}.avi'
-        video = None
+        try:
+            viz = StaticViz.from_gs(
+                region=self.region,
+                timestamp=self.timestamp,
+                zoom=self.zoom,
+                location=self.location,
+                opac05=self.opac05,
+                colormap=self.colormap,
+                include_timestamp=self.include_timestamp,
+                textloc=self.textloc,
+                tiles=self.tiles
+            )
+        except Exception as e:
+            print(str(e))
 
-        intervals = int(
-            (self.end - self.start).total_seconds() / (15 * 60)) + 1
-        dt_range = [
-            self.start + datetime.timedelta(minutes=15 * i) for i in range(intervals)]
+        if save_overlay:
+            nm = filename.split('/')
+            nm[-1] = f'overlay_{nm[-1]}'
+            overlay_fn = '/'.join(nm)
+            viz._data.img.save(overlay_fn)
 
-        times = []
-        totalsecs = 5 * intervals
-        for i, dt in enumerate(dt_range):
+        html = viz.get_root().render()
+        with temp_html_filepath(html) as fname:
+            # We need the tempfile to avoid JS security issues.
+            driver.get(f'file:///{fname}')
+            driver.maximize_window()
+            time.sleep(delay)
+            png = driver.get_screenshot_as_png()
 
-            printProgressBar(iteration=i,
-                             total=intervals,
-                             prefix=' Progress',
-                             suffix=f'[{str(dt)}]',
-                             totalsecs=totalsecs)
+        img = Image.open(io.BytesIO(png))
 
-            t0 = time.time()
-
-            dts = dt.strftime("%Y-%m-%d %H.%M.%SZ")
-
-            try:
-                viz = StaticViz.from_gs(
-                    region=self.region,
-                    timestamp=dt,
-                    zoom=self.zoom,
-                    location=self.location,
-                    opac05=self.opac05,
-                    colormap=self.colormap,
-                    include_timestamp=self.include_timestamp,
-                    textloc=self.textloc,
-                    tiles=self.tiles
-                )
-            except Exception as e:
-                print(str(e))
-                continue
-
-            if save_overlays:
-                overlay_fn = f'{dirname}/overlay_{dts}.png'
-                viz._data.img.save(overlay_fn)
-
-            html = viz.get_root().render()
-            with temp_html_filepath(html) as fname:
-                # We need the tempfile to avoid JS security issues.
-                driver.get('file:///{path}'.format(path=fname))
-                driver.maximize_window()
-                time.sleep(delay)
-                png = driver.get_screenshot_as_png()
-
-            img = Image.open(io.BytesIO(png))
-
-            fn = f'{dirname}/{dts}.png'
-            img.save(fn)
-
-            img = cv2.imread(fn)
-            height, width, _ = img.shape
-            size = (width, height)
-
-            # Can't instantiate until we have an image size
-            if video is None:
-                video = cv2.VideoWriter(
-                    video_name, cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
-
-            video.write(img)
-
-            t1 = time.time()
-            runtime = t1 - t0
-            times.append(runtime)
-            totalsecs = int(np.median(times) * intervals)
-
-        printProgressBar(iteration=intervals,
-                         total=intervals,
-                         prefix=' Progress',
-                         suffix=f'[{str(dt)}]',
-                         printEnd='\n\r',
-                         totalsecs=totalsecs)
-
-        print(f'releasing video: {video_name}')
-        video.release()
+        img.save(filename)
+        print(f'screenshot saved to {filename}')
 
     def create_animation_from_overlays(
         self,

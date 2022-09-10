@@ -66,7 +66,6 @@ def _snapshot_to_img(obj, size=None, format='png', scaling='epa', opac95=3, opac
         for i in range(3):
             rgba[:, :, i] = g[:, i][pmi]
     else:
-        # print(f'[_snapshot_to_img]: using {colormap}')
         cmap = cm.get_cmap(colormap)
         norm = mpl.colors.Normalize(vmin=0, vmax=40)
         rgba = cmap(norm(pm)) * 256

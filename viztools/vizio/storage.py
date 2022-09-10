@@ -28,7 +28,7 @@ def _round_1min(dt):
     return _round_time(dt, roundTo=60*1)
 
 
-def read_region_snapshot(region, timestamp, credentials_file=None, get_closest=False, colormap='auto', opac95=5, opac05=20):
+def read_region_snapshot(region, timestamp, credentials_file=None, get_closest=False, colormap='auto', opac95=5, opac05=20, generate_img=True):
     if credentials_file:
         import os
         os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_file
@@ -58,7 +58,7 @@ def read_region_snapshot(region, timestamp, credentials_file=None, get_closest=F
                     alts=obj['Elevations'],
                     vals=estimates,
                     vars=variance,
-                    generate_img=True,
+                    generate_img=generate_img,
                     opac95=opac95,
                     opac05=opac05,
                     timestamp=timestamp,

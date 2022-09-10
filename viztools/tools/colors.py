@@ -2,11 +2,18 @@
 
 PM_EPA_COLOR_SCALE_RGB = {
     0:  (105, 159, 64),    # Green
-    15: (255, 190, 63),    # Yellow
-    30: (250, 121, 29),    # Orange
+    12: (255, 190, 63),    # Yellow
+    35: (250, 121, 29),    # Orange
     45: (201, 52, 45),     # Red-Orange
-    60: (176, 10, 87),     # Red-Purple
-    75: (128, 8, 78)       # Purple
+    55: (232, 66, 88),     # Red
+    100: (176, 10, 87),     # Red-Purple
+    150: (128, 8, 78)       # Purple
+}
+PM_EPA_COLOR_SCALE_RGB_2 = {
+    0:  (176, 216, 164),    # Green
+    8: (254, 225, 145),    # Yellow
+    16: (253, 128, 96),    # Orange
+    25: (232, 66, 88),     # Red
 }
 
 AQI_COLOR_SCALE_RGB = {
@@ -18,9 +25,10 @@ AQI_COLOR_SCALE_RGB = {
     301: (128, 8, 78)       # Purple
 }
 
+
 def _hex_to_RGB(hex_val):
     return [int(hex_val[i:i+2], 16) for i in range(1, 6, 2)]
-    
+
 
 def _RGB_to_hex(RGB):
     ''' [255,255,255] -> "#FFFFFF" '''
@@ -34,11 +42,11 @@ def _color_dict(gradient):
     ''' Takes in a list of RGB sub-lists and returns dictionary of
       colors in RGB and hex form for use in a graphing function
       defined later on '''
-    
-    return {"hex":[_RGB_to_hex(RGB) for RGB in gradient],
-            "r":[RGB[0] for RGB in gradient],
-            "g":[RGB[1] for RGB in gradient],
-            "b":[RGB[2] for RGB in gradient]}
+
+    return {"hex": [_RGB_to_hex(RGB) for RGB in gradient],
+            "r": [RGB[0] for RGB in gradient],
+            "g": [RGB[1] for RGB in gradient],
+            "b": [RGB[2] for RGB in gradient]}
 
 
 def _linear_gradient(start_hex, finish_hex="#FFFFFF", n=10):
@@ -75,10 +83,11 @@ def _polylinear_gradient(colors, n, anchor_locs=None):
 
     if len(colors) > 1:
         for col in range(1, len(colors) - 1):
-            
+
             if anchor_locs:
-                n_out = int(n * ((anchor_locs[col+1] - anchor_locs[col])/anchor_locs[-1]))
-            
+                n_out = int(
+                    n * ((anchor_locs[col+1] - anchor_locs[col])/anchor_locs[-1]))
+
             next_col = _linear_gradient(colors[col], colors[col+1], n_out)
             for k in ("hex", "r", "g", "b"):
                 # Exclude first point to avoid duplicates
@@ -115,7 +124,8 @@ def get_custom_color_gradient(anchors, n=None, format='RGB'):
     """
 
     # Convert to HEX and split into lists of keys and values
-    locs, colors = zip(*[(k, v if isinstance(v,str) else _RGB_to_hex(v)) for k,v in anchors.items()])
+    locs, colors = zip(
+        *[(k, v if isinstance(v, str) else _RGB_to_hex(v)) for k, v in anchors.items()])
 
     n = n or locs[-1]
 
@@ -143,6 +153,7 @@ def get_gyor_color_gradient(source, n=None, format='RGB'):
     elif source == 'aqi':
         anchors = AQI_COLOR_SCALE_RGB
     else:
-        anchors = dict(zip(range(len(PM_EPA_COLOR_SCALE_RGB)), PM_EPA_COLOR_SCALE_RGB.values()))
+        anchors = dict(zip(range(len(PM_EPA_COLOR_SCALE_RGB)),
+                       PM_EPA_COLOR_SCALE_RGB.values()))
 
     return get_custom_color_gradient(anchors, n, format)

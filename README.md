@@ -27,12 +27,4 @@ pipenv run jupyter-notebook examples
 
 ### Developers
 
-To create a new distro locally:
-
-Update version in `version.py`. Then run:
-
-```bash
-python setup.py bdist_egg
-```
-
-NOTE: Make sure you update the package in your local environment with pip!
+To create a new distro locally, go to root and run `python deploy.py`
