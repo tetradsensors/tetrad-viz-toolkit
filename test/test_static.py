@@ -1,4 +1,4 @@
-from static import StaticViz
+from viztools import StaticViz
 
 
 def test_StaticViz():
